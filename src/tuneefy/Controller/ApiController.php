@@ -104,6 +104,7 @@ class ApiController
         $this->engine->setCurrentToken($this->container['token']);
 
         $permalink = $request->getQueryParam('q');
+        $persistence = true && ($request->getQueryParam('persistence') && 'true' == $request->getQueryParam('persistence'));
 
         try {
             $real_mode = $this->engine->translateFlag('mode', $request->getQueryParam('mode'));
@@ -121,7 +122,7 @@ class ApiController
         }
 
         try {
-            $result = $this->engine->lookup($permalink, $real_mode);
+            $result = $this->engine->lookup($permalink, $real_mode, $persistence);
         } catch (PlatformException $e) {
             $result = false;
         }
@@ -157,6 +158,7 @@ class ApiController
 
         $query = $request->getQueryParam('q');
         $limit = $request->getQueryParam('limit') ? max(0, min(intval($request->getQueryParam('limit')), Platform::LIMIT * 2)) : Platform::LIMIT;
+        $persistence = true && ($request->getQueryParam('persistence') && 'true' == $request->getQueryParam('persistence'));
 
         try {
             $real_type = $this->engine->translateFlag('type', $args['type']);
@@ -181,7 +183,7 @@ class ApiController
         }
 
         try {
-            $result = $this->engine->search($platform, $real_type, $query, $limit, $real_mode);
+            $result = $this->engine->search($platform, $real_type, $query, $limit, $real_mode, $persistence);
         } catch (PlatformException $e) {
             $result = false;
         }
@@ -214,6 +216,7 @@ class ApiController
 
         $query = $request->getQueryParam('q');
         $limit = $request->getQueryParam('limit') ? max(0, min(intval($request->getQueryParam('limit')), Platform::LIMIT * 2)) : Platform::LIMIT;
+        $persistence = true && ($request->getQueryParam('persistence') && 'true' == $request->getQueryParam('persistence'));
 
         $include = strtolower($request->getQueryParam('include'));
         $aggressive = true && ($request->getQueryParam('aggressive') && 'true' == $request->getQueryParam('aggressive'));
@@ -239,7 +242,7 @@ class ApiController
         }
 
         try {
-            $result = $this->engine->aggregate($platforms, $real_type, $query, $limit, $real_mode, $aggressive);
+            $result = $this->engine->aggregate($platforms, $real_type, $query, $limit, $real_mode, $aggressive, $persistence);
         } catch (PlatformException $e) {
             $result = false;
         }

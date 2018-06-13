@@ -96,7 +96,7 @@ class PlatformEngine
         return $this->flags[$path];
     }
 
-    public function lookup(string $permalink, int $mode): array
+    public function lookup(string $permalink, int $mode, bool $persistence = false): array
     {
         // Which platform is this permalink from ?
         $platform = null;
@@ -122,15 +122,24 @@ class PlatformEngine
         }
 
         // Initiate a lookup on this platform
-        return ['result' => $platform->expandPermalink($permalink, $mode)->store($this->token)];
+        $result = $platform->expandPermalink($permalink, $mode);
+
+        if (true === $persistence) {
+            $result = $result->store($this->token);
+        }
+
+        return ['result' => $result];
     }
 
-    public function search(Platform $platform, int $type, string $query, int $limit, int $mode): array
+    public function search(Platform $platform, int $type, string $query, int $limit, int $mode, bool $persistence = false): array
     {
         if (($platform->isCapableOfSearchingTracks() && Platform::SEARCH_TRACK === $type)
          || ($platform->isCapableOfSearchingAlbums() && Platform::SEARCH_ALBUM === $type)) {
             $results = Platform::search($platform, $type, $query, $limit, $mode);
-            array_map(function ($e) { return $e->store($this->token); }, $results);
+
+            if (true === $persistence) {
+                array_map(function ($e) { return $e->store($this->token); }, $results);
+            }
 
             return ['results' => $results];
         } elseif (Platform::SEARCH_TRACK === $type) {
@@ -140,7 +149,7 @@ class PlatformEngine
         }
     }
 
-    public function aggregate(array $platforms, int $type, string $query, int $limit, int $mode, bool $aggressive): array
+    public function aggregate(array $platforms, int $type, string $query, int $limit, int $mode, bool $aggressive, bool $persistence = false): array
     {
         $result = [];
 
@@ -151,10 +160,10 @@ class PlatformEngine
 
         $resultArray = Platform::aggregate($filtered_platforms, $type, $query, Platform::AGGREGATE_LIMIT, $mode);
 
-        return ['results' => $this->mergeResults($resultArray['results'], $aggressive, $limit), 'errors' => $resultArray['errors']];
+        return ['results' => $this->mergeResults($resultArray['results'], $aggressive, $limit, $persistence), 'errors' => $resultArray['errors']];
     }
 
-    public function mergeResults(array $results, bool $aggressive, int $limit): array
+    public function mergeResults(array $results, bool $aggressive, int $limit, bool $persistence = false): array
     {
         $merged_results = [];
 
@@ -191,7 +200,11 @@ class PlatformEngine
         array_splice($merged_results, $limit);
 
         // Gives each element a last chance of doing something useful on its data
-        array_map(function ($e) { return $e->finalizeMerge()->store($this->token); }, $merged_results);
+        array_map(function ($e) { return $e->finalizeMerge(); }, $merged_results);
+
+        if (true === $persistence) {
+            array_map(function ($e) { return $e->store($this->token); }, $merged_results);
+        }
 
         // Discards the key (hash) that we don't need anymore
         return array_values($merged_results);

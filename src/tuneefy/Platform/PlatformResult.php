@@ -18,7 +18,7 @@ class PlatformResult
     {
         $this->musical_entity = $musical_entity;
         $this->metadata = $metadata;
-        $this->intent = uniqid(); // We create it now for later use
+        $this->intent = null;
         $this->expires = null;
     }
 
@@ -94,6 +94,8 @@ class PlatformResult
 
         // Store guid + serialized platformResult in db
         $db = DatabaseHandler::getInstance(null);
+
+        $this->intent = uniqid();
         $this->expires = $db->addItemForClient($this, $token ? $token['client_id'] : null);
 
         return $this;

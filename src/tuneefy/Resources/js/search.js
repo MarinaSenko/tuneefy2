@@ -123,7 +123,7 @@ $(document).ready(function(){
 
         console.log("Searching for " + options.itemType + "s with query '" + queryString + "' on " + options.selectedPlatforms + " (strict: " + options.strictMode + ").");
 
-        var params = {q: queryString, aggressive: options.strictMode, include: options.selectedPlatforms, limit: (options.limit?options.limit:10)};
+        var params = {q: queryString, persistence: true, aggressive: options.strictMode, include: options.selectedPlatforms, limit: (options.limit?options.limit:10)};
         url = url + "?" + $.param(params);
 
         var jqxhr = $.get({

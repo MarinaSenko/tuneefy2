@@ -169,7 +169,7 @@ This API returns both machine-readable error codes and human-readable error mess
 <br>
 ## Intents
 
-When searching on the tuneefy API, results are returned with an intent code, in the share object :
+When searching on the tuneefy API, and when you pass the persistence flag to the call, results are returned with an non-null intent code, in the share object :
 
 ```
 {
@@ -224,7 +224,7 @@ To get the tuneefy link from the intent, just call the `/share` endpoint with th
   + score: 0.97 (number)
   + merges: 1 (number, optional)
 + share (object)
-  + intent: `590c6c8320b1b` (string)
+  + intent: `null`
       
 ## Musical Entity
 
@@ -399,7 +399,7 @@ Retrieves a specific **Platform** and its details
 
 # Group Search
 
-## Search [/search/{type}/{tag}{?q,mode}]
+## Search [/search/{type}/{tag}{?q,mode,persistence}]
 
 ### Search a specific platform [GET]
 Search for tracks or albums on a specific platform
@@ -419,6 +419,7 @@ The **mode** indicates whether we're going to eagerly fetch data when it's missi
     + tag: `deezer` (required, string) ... The tag of the platform to search on
     + q: `ok+computer` (required, string) ... The text to search for
     + mode: `lazy` (optional, string) ... The search mode, defaults to `lazy`
+    + persistence: `false` (optional, string) ... The persistence mode, defaults to `false`
 
 + Request Track
     + Parameters
@@ -462,7 +463,7 @@ The **mode** indicates whether we're going to eagerly fetch data when it's missi
                 + metadata (object)
                   + score: 0.97 (number)
                 + share (object)
-                  + intent: `590c6c8320b1b` (string)
+                  + intent: `null`
 
 + Request Album
     + Parameters
@@ -497,8 +498,8 @@ The **mode** indicates whether we're going to eagerly fetch data when it's missi
                 * metadata (object)
                     * score: 1 (number)
                 * share (object)
-                    * intent: `590c6c8320b1b` (string)
-                    * expires: `2016-05-05T12:30:00` (string)
+                    * intent: `null`
+                    * expires: `null`
 
 + Request Without `q` parameter
 
@@ -517,7 +518,7 @@ The **mode** indicates whether we're going to eagerly fetch data when it's missi
                 ]
             }
 
-## Lookup [/lookup{?q,mode}]
+## Lookup [/lookup{?q,mode,persistence}]
 
 ### Lookup a permalink [GET]
 Lookup a permalink to retrieve the info about the track or album
@@ -533,6 +534,7 @@ _See search_
 + Parameters
     + q: `https://open.spotify.com/track/6IWxHgVbdKyUMydhVGXRaT` (required, string) ... The permalink to search for
     + mode: `lazy` (optional, string) ... The lookup mode, defaults to `lazy`
+    + persistence: `false` (optional, string) ... The persistence mode, defaults to `false`
 
 + Request Example
 
@@ -573,8 +575,8 @@ _See search_
                     - `On The Road Again`
                 * platform: `Spotify` (string)
             * share (object)
-                * intent: `590c6c8320b1b` (string)
-                * expires: `2016-05-05T12:30:00` (string)
+                * intent: `null`
+                * expires: `null`
                     
 
 + Request Unknown permalink
@@ -594,7 +596,7 @@ _See search_
                 ]
             }
 
-## Aggregate [/aggregate/{type}{?q,mode,aggressive,include}]
+## Aggregate [/aggregate/{type}{?q,mode,aggressive,include,persistence}]
 
 ### Search on multiple platforms at once [GET]
 Search for tracks or albums on multiple platforms
@@ -626,6 +628,7 @@ Acoustic versions, covers or remix should be correctly differentiated even if yo
     + mode: `lazy` (optional, string) ... The lookup mode, defaults to `lazy`
     + aggressive: `false` (optional, boolean) ... Whether to merge tracks without looking at the album name. Defaults to `false`
     + include: `deezer,spotify,qobuz` (optional, string) ... A list of comma separated platform tags from which to aggregate results.
+    + persistence: `false` (optional, string) ... The persistence mode, defaults to `false`
 
 + Request Example
 
